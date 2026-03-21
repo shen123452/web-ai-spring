@@ -11,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.UUID;
 
+//用途：为每个请求生成一个唯一的requestId
 @Component
 public class RequestIdFilter extends OncePerRequestFilter {
     private static final String MDC_KEY = "requestId";

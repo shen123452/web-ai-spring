@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class PageResult<T> {
     private Long total;
-    private List<T> rows;
+    private List<T> rows;//这里的泛型T表示 rows的类型是泛型，T表示类型参数，可以在创建对象时指定具体类型
 }

@@ -14,7 +14,7 @@ public class DeptServiceImpl implements DeptService {
     @Autowired
     private DeptMapper deptMapper;
     // 查询所有部门,返回部门列表
-    @Override
+    @Override//
     public List<Dept> list() {
         return deptMapper.list();
     }

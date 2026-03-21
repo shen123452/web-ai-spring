@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 public class DeptController {
+    // 日志对象
     private static final Logger log = LoggerFactory.getLogger(DeptController.class);
 
     // 注入DeptService
@@ -24,19 +25,17 @@ public class DeptController {
         // 调用service查询所有部门,并返回结果
         return Result.success(deptService.list());
     }
-
+//查询回显部门详情
     @GetMapping("/depts/{id}")
     public Result<Dept> getById(@PathVariable Integer id) {
         log.info("根据id查询部门: {}", id);
         return Result.success(deptService.getById(id));
     }
-//    @DeleteMapping("/depts/{id}")
-//    public Result delete(@PathVariable Integer id){
-//        System.out.println("根据id删除部门"+id);
-//        // 调用service删除部门
-//        deptService.delete(id);
-//        // 返回结果
-//        return Result.success(deptService.list());
+//    @DeleteMapping("/depts")
+//    public Result delete(HttpServletRequest request) {
+//        String id = request.getParameter("id");
+//        deptService.delete(Integer.valueOf(id)); // 将包装数据类型转换为基本数据类型
+//        return Result.success();
 //    }
 
     @DeleteMapping("/depts")
@@ -44,7 +43,7 @@ public class DeptController {
         log.info("根据id删除部门(参数): {}", id);
         deptService.delete(id);
         return Result.success(deptService.list());
-    }
+    }//@RequestParam用法：根据id删除部门(参数)
 
     @PostMapping("/depts")
     public Result add(@RequestBody Dept dept) {
@@ -60,12 +59,13 @@ public class DeptController {
         return Result.success();
     }
 
-    @PutMapping("/depts/{id}")
-    public Result updateByPath(@PathVariable Integer id, @RequestBody Dept dept) {
-        dept.setId(id);
-        log.info("更新部门(路径): {}", dept);
-        deptService.update(dept);
-        return Result.success();
-    }
+
+//    @PutMapping("/depts/{id}")
+//    public Result updateByPath(@PathVariable Integer id, @RequestBody Dept dept) {
+//        dept.setId(id);
+//        log.info("更新部门(路径): {}", dept);
+//        deptService.update(dept);
+//        return Result.success();
+//    }
 
 }
