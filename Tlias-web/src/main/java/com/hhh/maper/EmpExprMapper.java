@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface EmpExprMapper {
+public interface  EmpExprMapper {
     @Delete("delete from emp_expr where emp_id = #{empId}")
     int deleteByEmpId(Integer empId);
 

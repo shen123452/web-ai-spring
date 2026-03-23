@@ -1,15 +1,19 @@
 package com.hhh.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.hhh.maper.EmpExprMapper;
 import com.hhh.maper.EmpMapper;
 import com.hhh.pojo.Emp;
 import com.hhh.pojo.EmpExpr;
+import com.hhh.pojo.EmpQueryParam;
 import com.hhh.pojo.PageResult;
 import com.hhh.service.EmpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,14 +27,14 @@ public class EmpServiceImpl implements EmpService {
     @Autowired
     private EmpExprMapper empExprMapper;
 
-    @Override
-    public PageResult<Emp> page(Integer page, Integer pageSize) {
-        Integer pageNo = page == null || page < 1 ? 1 : page;
-        Integer size = pageSize == null || pageSize < 1 ? 10 : pageSize;
-        Integer offset = (pageNo - 1) * size;
-        Long total = empMapper.count();
-        List<Emp> rows = empMapper.list(offset, size);
-        return new PageResult<>(total, rows);
+    @Override // 分页查询员工列表
+    public PageResult<Emp> page(EmpQueryParam empQueryParam) {
+        //设置分页参数
+        PageHelper.startPage(empQueryParam.getPage(),empQueryParam.getPageSize());
+        //查询员工列表
+        Page<Emp> empPage = (Page<Emp>) empMapper.list(empQueryParam);//将获得的员工列表数据封装到Page对象中（强转）
+        //返回分页结果
+        return new PageResult<>(empPage.getTotal(), empPage.getResult());
     }
 
     @Override

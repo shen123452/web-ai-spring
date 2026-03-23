@@ -22,4 +22,6 @@ public class Emp {
     private LocalDateTime createTime; //创建时间
     private LocalDateTime updateTime; //修改时间
     private List<EmpExpr> exprs; //工作经历
+    private String deptName;
+
 }

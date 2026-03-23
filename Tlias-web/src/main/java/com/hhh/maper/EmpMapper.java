@@ -1,24 +1,19 @@
 package com.hhh.maper;
 
 import com.hhh.pojo.Emp;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-import org.apache.ibatis.annotations.Delete;
+import com.hhh.pojo.EmpQueryParam;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
 public interface EmpMapper {
-    @Select("select count(*) from emp")
-    Long count();
-
-    @Select("select id, username, password, name, gender, phone, job, salary, image, entry_date, dept_id, " +
-            "create_time, update_time from emp order by id limit #{offset}, #{pageSize}")
-    List<Emp> list(@Param("offset") Integer offset, @Param("pageSize") Integer pageSize);
+    //@Select("select e.*,d.name deptName from emp e left join dept d on e.dept_id=d.id order by e.update_time desc")
+//    List<Emp> list(@Param("name") String name,
+//                   @Param("gender") Integer gender,
+//                   @Param("begin") LocalDate begin,
+//                   @Param("end") LocalDate end);
+    List<Emp> list(EmpQueryParam empQueryParam);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("insert into emp(username, password, name, gender, phone, job, salary, image, entry_date, dept_id, " +
