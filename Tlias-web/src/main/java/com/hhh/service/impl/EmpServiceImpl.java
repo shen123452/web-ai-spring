@@ -12,8 +12,8 @@ import com.hhh.service.EmpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class EmpServiceImpl implements EmpService {
             emp.setPassword(DEFAULT_PASSWORD);
         }
         empMapper.insert(emp);
-        insertExprs(emp.getId(), emp.getExprs());
+        insertExprs(emp.getId(), resolveExprs(emp));
     }
 
     @Override
@@ -55,9 +55,10 @@ public class EmpServiceImpl implements EmpService {
     public void update(Emp emp) {
         emp.setUpdateTime(LocalDateTime.now());
         empMapper.update(emp);
-        if (emp.getExprs() != null) {
+        List<EmpExpr> exprs = resolveExprs(emp);
+        if (exprs != null) {
             empExprMapper.deleteByEmpId(emp.getId());
-            insertExprs(emp.getId(), emp.getExprs());
+            insertExprs(emp.getId(), exprs);
         }
     }
 
@@ -76,5 +77,12 @@ public class EmpServiceImpl implements EmpService {
             expr.setEmpId(empId);
         }
         empExprMapper.insertBatch(exprs);
+    }
+
+    private List<EmpExpr> resolveExprs(Emp emp) {
+        if (!CollectionUtils.isEmpty(emp.getExprs())) {
+            return emp.getExprs();
+        }
+        return emp.getExprs() != null ? emp.getExprs() : emp.getExprList();
     }
 }

@@ -8,17 +8,7 @@ import com.hhh.service.EmpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class EmpController {
@@ -44,6 +34,10 @@ public class EmpController {
         return Result.success(empService.page(empQueryParam));
     }
 
+    /*
+
+    新增员工
+     */
 
     @PostMapping("/emps")
     public Result add(@RequestBody Emp emp) {
@@ -51,6 +45,10 @@ public class EmpController {
         empService.add(emp);
         return Result.success();
     }
+
+    /*
+    更新员工
+     */
 
     @PutMapping("/emps/{id}")
     public Result update(@PathVariable Integer id, @RequestBody Emp emp) {

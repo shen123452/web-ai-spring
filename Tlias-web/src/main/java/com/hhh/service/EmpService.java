@@ -6,7 +6,7 @@ import com.hhh.pojo.PageResult;
 public interface EmpService {
     PageResult<Emp> page(EmpQueryParam empQueryParam);
 
-    void add(Emp emp);
+    void add(Emp emp);//新增员工
 
     void update(Emp emp);
 

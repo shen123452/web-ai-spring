@@ -15,17 +15,17 @@ public interface EmpMapper {
 //                   @Param("end") LocalDate end);
     List<Emp> list(EmpQueryParam empQueryParam);
 
-    @Options(useGeneratedKeys = true, keyProperty = "id")
+    @Options(useGeneratedKeys = true, keyProperty = "id")//主键传递
     @Insert("insert into emp(username, password, name, gender, phone, job, salary, image, entry_date, dept_id, " +
             "create_time, update_time) values(#{username}, #{password}, #{name}, #{gender}, #{phone}, #{job}, " +
             "#{salary}, #{image}, #{entryDate}, #{deptId}, #{createTime}, #{updateTime})")
-    int insert(Emp emp);
+    void insert(Emp emp);
 
     @Update("update emp set username=#{username}, password=#{password}, name=#{name}, gender=#{gender}, " +
             "phone=#{phone}, job=#{job}, salary=#{salary}, image=#{image}, entry_date=#{entryDate}, " +
             "dept_id=#{deptId}, update_time=#{updateTime} where id=#{id}")
-    int update(Emp emp);
+   void update(Emp emp);
 
     @Delete("delete from emp where id=#{id}")
-    int deleteById(Integer id);
+   void deleteById(Integer id);
 }
