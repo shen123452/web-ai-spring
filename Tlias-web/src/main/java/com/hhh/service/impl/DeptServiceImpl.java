@@ -1,6 +1,6 @@
 package com.hhh.service.impl;
 
-import com.hhh.maper.DeptMapper;
+import com.hhh.mapper.DeptMapper;
 import com.hhh.pojo.Dept;
 import com.hhh.service.DeptService;
 import org.springframework.beans.factory.annotation.Autowired;

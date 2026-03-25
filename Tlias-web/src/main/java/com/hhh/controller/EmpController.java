@@ -40,7 +40,7 @@ public class EmpController {
      */
 
     @PostMapping("/emps")
-    public Result add(@RequestBody Emp emp) {
+    public Result add(@RequestBody Emp emp)throws Exception {
         log.info("新增员工: {}", emp);
         empService.add(emp);
         return Result.success();

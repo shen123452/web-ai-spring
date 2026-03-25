@@ -2,12 +2,10 @@ package com.hhh.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.hhh.maper.EmpExprMapper;
-import com.hhh.maper.EmpMapper;
-import com.hhh.pojo.Emp;
-import com.hhh.pojo.EmpExpr;
-import com.hhh.pojo.EmpQueryParam;
-import com.hhh.pojo.PageResult;
+import com.hhh.mapper.EmpExprMapper;
+import com.hhh.mapper.EmpMapper;
+import com.hhh.pojo.*;
+import com.hhh.service.EmpLogService;
 import com.hhh.service.EmpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,9 @@ public class EmpServiceImpl implements EmpService {
     @Autowired
     private EmpExprMapper empExprMapper;
 
+    @Autowired
+    private EmpLogService empLogService;
+
     @Override // 分页查询员工列表
     public PageResult<Emp> page(EmpQueryParam empQueryParam) {
         //设置分页参数
@@ -38,16 +39,32 @@ public class EmpServiceImpl implements EmpService {
     }
 
     @Override
-    @Transactional
-    public void add(Emp emp) {
-        LocalDateTime now = LocalDateTime.now();
-        emp.setCreateTime(now);
-        emp.setUpdateTime(now);
-        if (emp.getPassword() == null || emp.getPassword().isBlank()) {
-            emp.setPassword(DEFAULT_PASSWORD);
+    @Transactional(rollbackFor = Exception.class)
+   public void add(Emp emp) throws Exception {
+//        public void add(Emp emp)  {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            emp.setCreateTime(now);
+            emp.setUpdateTime(now);
+            if (emp.getPassword() == null || emp.getPassword().isBlank()) {
+                emp.setPassword(DEFAULT_PASSWORD);
+            }
+            empMapper.insert(emp);
+//        if(true) {
+//            throw new Exception("出错了");
+//        }
+            List<EmpExpr> exprList = !CollectionUtils.isEmpty(emp.getExprList()) ? emp.getExprList() : emp.getExprs();
+            if (!CollectionUtils.isEmpty(exprList)) {
+                for (EmpExpr expr : exprList) {
+                    expr.setEmpId(emp.getId());
+                }
+                empExprMapper.insertBatch(exprList);
+            }
+        } finally {
+            EmpLog empLog = new EmpLog(null,LocalDateTime.now(),"新增员工："+emp);
+            empLogService.insertLog(empLog);
+
         }
-        empMapper.insert(emp);
-        insertExprs(emp.getId(), resolveExprs(emp));
     }
 
     @Override
@@ -55,34 +72,23 @@ public class EmpServiceImpl implements EmpService {
     public void update(Emp emp) {
         emp.setUpdateTime(LocalDateTime.now());
         empMapper.update(emp);
-        List<EmpExpr> exprs = resolveExprs(emp);
-        if (exprs != null) {
+        List<EmpExpr> exprList = !CollectionUtils.isEmpty(emp.getExprList()) ? emp.getExprList() : emp.getExprs();
+        if (emp.getExprList() != null || emp.getExprs() != null) {
             empExprMapper.deleteByEmpId(emp.getId());
-            insertExprs(emp.getId(), exprs);
+            if (!CollectionUtils.isEmpty(exprList)) {
+                for (EmpExpr expr : exprList) {
+                    expr.setEmpId(emp.getId());
+                }
+                empExprMapper.insertBatch(exprList);
+            }
         }
     }
+
 
     @Override
     @Transactional
     public void delete(Integer id) {
         empExprMapper.deleteByEmpId(id);
         empMapper.deleteById(id);
-    }
-
-    private void insertExprs(Integer empId, List<EmpExpr> exprs) {
-        if (exprs == null || exprs.isEmpty()) {
-            return;
-        }
-        for (EmpExpr expr : exprs) {
-            expr.setEmpId(empId);
-        }
-        empExprMapper.insertBatch(exprs);
-    }
-
-    private List<EmpExpr> resolveExprs(Emp emp) {
-        if (!CollectionUtils.isEmpty(emp.getExprs())) {
-            return emp.getExprs();
-        }
-        return emp.getExprs() != null ? emp.getExprs() : emp.getExprList();
     }
 }
