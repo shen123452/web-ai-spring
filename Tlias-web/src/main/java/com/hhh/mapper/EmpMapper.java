@@ -5,6 +5,7 @@ import com.hhh.pojo.EmpQueryParam;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface EmpMapper {
@@ -28,4 +29,6 @@ public interface EmpMapper {
 
     @Delete("delete from emp where id=#{id}")
    void deleteById(Integer id);
+
+    List<Map<String, Object>> countEmpJobData();
 }

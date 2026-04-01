@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/emps")
 public class EmpController {
     private static final Logger log = LoggerFactory.getLogger(EmpController.class);
 
@@ -60,7 +61,7 @@ public class EmpController {
 
     @DeleteMapping("/emps/{id}")
     public Result delete(@PathVariable Integer id) {
-        log.info("删除员工: {}", id);
+        log.info("删除员工：{}", id);
         empService.delete(id);
         return Result.success();
     }

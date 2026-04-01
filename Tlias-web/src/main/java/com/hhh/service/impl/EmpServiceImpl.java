@@ -40,31 +40,26 @@ public class EmpServiceImpl implements EmpService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-   public void add(Emp emp) throws Exception {
-//        public void add(Emp emp)  {
-        try {
-            LocalDateTime now = LocalDateTime.now();
-            emp.setCreateTime(now);
-            emp.setUpdateTime(now);
-            if (emp.getPassword() == null || emp.getPassword().isBlank()) {
-                emp.setPassword(DEFAULT_PASSWORD);
-            }
-            empMapper.insert(emp);
-//        if(true) {
-//            throw new Exception("出错了");
-//        }
-            List<EmpExpr> exprList = !CollectionUtils.isEmpty(emp.getExprList()) ? emp.getExprList() : emp.getExprs();
-            if (!CollectionUtils.isEmpty(exprList)) {
-                for (EmpExpr expr : exprList) {
-                    expr.setEmpId(emp.getId());
-                }
-                empExprMapper.insertBatch(exprList);
-            }
-        } finally {
-            EmpLog empLog = new EmpLog(null,LocalDateTime.now(),"新增员工："+emp);
-            empLogService.insertLog(empLog);
-
+    public void add(Emp emp) throws Exception {
+        LocalDateTime now = LocalDateTime.now();
+        emp.setCreateTime(now);
+        emp.setUpdateTime(now);
+        if (emp.getPassword() == null || emp.getPassword().isBlank()) {
+            emp.setPassword(DEFAULT_PASSWORD);
         }
+        empMapper.insert(emp);
+        
+        List<EmpExpr> exprList = !CollectionUtils.isEmpty(emp.getExprList()) ? emp.getExprList() : emp.getExprs();
+        if (!CollectionUtils.isEmpty(exprList)) {
+            for (EmpExpr expr : exprList) {
+                expr.setEmpId(emp.getId());
+            }
+            empExprMapper.insertBatch(exprList);
+        }
+        
+        // 记录日志
+        EmpLog empLog = new EmpLog(null, LocalDateTime.now(), "新增员工：" + emp);
+        empLogService.insertLog(empLog);
     }
 
     @Override
@@ -72,6 +67,8 @@ public class EmpServiceImpl implements EmpService {
     public void update(Emp emp) {
         emp.setUpdateTime(LocalDateTime.now());
         empMapper.update(emp);
+        
+        // 只有当工作经历列表存在时才进行更新操作
         List<EmpExpr> exprList = !CollectionUtils.isEmpty(emp.getExprList()) ? emp.getExprList() : emp.getExprs();
         if (emp.getExprList() != null || emp.getExprs() != null) {
             empExprMapper.deleteByEmpId(emp.getId());

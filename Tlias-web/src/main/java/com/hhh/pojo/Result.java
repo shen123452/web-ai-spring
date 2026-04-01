@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class Result<T> {
     private Integer code;
     private String msg;
-    private Object data;
+    private T data;
 
     public static  Result success() {
         return new Result(200, "success", null);

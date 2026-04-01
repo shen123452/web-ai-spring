@@ -40,10 +40,10 @@ public class DeptController {
 
     @DeleteMapping("/depts")
     public Result deleteByParam(@RequestParam Integer id){
-        log.info("根据id删除部门(参数): {}", id);
+        log.info("根据 id 删除部门 (参数): {}", id);
         deptService.delete(id);
-        return Result.success(deptService.list());
-    }//@RequestParam用法：根据id删除部门(参数)
+        return Result.success();
+    }
 
     @PostMapping("/depts")
     public Result add(@RequestBody Dept dept) {
