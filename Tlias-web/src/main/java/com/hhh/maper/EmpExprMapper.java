@@ -1,4 +1,4 @@
-package com.hhh.mapper;
+package com.hhh.maper;
 
 import com.hhh.pojo.EmpExpr;
 import org.apache.ibatis.annotations.Delete;

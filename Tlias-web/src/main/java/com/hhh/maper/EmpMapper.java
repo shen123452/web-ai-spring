@@ -1,4 +1,4 @@
-package com.hhh.mapper;
+package com.hhh.maper;
 
 import com.hhh.pojo.Emp;
 import com.hhh.pojo.EmpQueryParam;
