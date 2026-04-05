@@ -5,64 +5,80 @@ import com.hhh.pojo.EmpQueryParam;
 import com.hhh.pojo.PageResult;
 import com.hhh.pojo.Result;
 import com.hhh.service.EmpService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
+
+@Slf4j
 @RestController
 @RequestMapping("/emps")
+@RequiredArgsConstructor
 public class EmpController {
-    private static final Logger log = LoggerFactory.getLogger(EmpController.class);
+    private final EmpService empService;
 
-    @Autowired
-    private EmpService empService;
-
-//   @GetMapping("/emps")
-//    public Result<PageResult<Emp>> page(
-//            @RequestParam(defaultValue = "1") Integer page,
-//            @RequestParam(defaultValue = "10") Integer pageSize,
-//            String name, Integer gender,
-//            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
-//            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end
-//    ) {
-//        log.info("分页查询员工: {}, {}, {}, {}, {}, {}", page, pageSize, name, gender, begin, end);
-//        return Result.success(empService.page(page, pageSize, name, gender, begin, end));
-//    }
-    @GetMapping("/emps")
+    @GetMapping
     public Result<PageResult<Emp>> page(EmpQueryParam empQueryParam) {
-        log.info("分页查询员工: {}",empQueryParam);
+        log.info("Page query employees: {}", empQueryParam);
         return Result.success(empService.page(empQueryParam));
     }
 
-    /*
+    @GetMapping("/list")
+    public Result<List<Emp>> list() {
+        log.info("Query simple employee list");
+        return Result.success(empService.list());
+    }
 
-    新增员工
-     */
+    @GetMapping("/{id}")
+    public Result<Emp> getById(@PathVariable Integer id) {
+        log.info("Query employee by id: {}", id);
+        return Result.success(empService.getById(id));
+    }
 
-    @PostMapping("/emps")
-    public Result add(@RequestBody Emp emp) {
-        log.info("新增员工: {}", emp);
+    @PostMapping
+    public Result<Void> add(@RequestBody Emp emp) {
+        log.info("Add employee: {}", emp);
         empService.add(emp);
         return Result.success();
     }
 
-    /*
-    更新员工
-     */
-
-    @PutMapping("/emps/{id}")
-    public Result update(@PathVariable Integer id, @RequestBody Emp emp) {
-        emp.setId(id);
-        log.info("更新员工: {}", emp);
+    @PutMapping({"", "/{id}"})
+    public Result<Void> update(
+            @PathVariable(required = false) Integer id,
+            @RequestBody Emp emp
+    ) {
+        if (id != null) {
+            emp.setId(id);
+        }
+        if (emp.getId() == null) {
+            throw new IllegalArgumentException("员工ID不能为空");
+        }
+        log.info("Update employee: {}", emp);
         empService.update(emp);
         return Result.success();
     }
 
-    @DeleteMapping("/emps/{id}")
-    public Result delete(@PathVariable Integer id) {
-        log.info("删除员工：{}", id);
-        empService.delete(id);
+    @DeleteMapping({"", "/{ids}"})
+    public Result<Void> delete(
+            @PathVariable(required = false) String ids,
+            @RequestParam(name = "id", required = false) String idParam,
+            @RequestParam(name = "ids", required = false) String idsParam
+    ) {
+        String rawIds = StringUtils.hasText(ids) ? ids : (StringUtils.hasText(idsParam) ? idsParam : idParam);
+        if (!StringUtils.hasText(rawIds)) {
+            throw new IllegalArgumentException("员工ID不能为空");
+        }
+
+        List<Integer> idList = Arrays.stream(rawIds.split(","))
+                .map(String::trim)
+                .filter(StringUtils::hasText)
+                .map(Integer::valueOf)
+                .toList();
+        log.info("Delete employees: {}", idList);
+        empService.delete(idList);
         return Result.success();
     }
 }

@@ -2,9 +2,21 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.hhh.maper.EmpMapper">
+<mapper namespace="com.hhh.mapper.EmpMapper">
     <select id="list" resultType="com.hhh.pojo.Emp">
-        select e.*, d.name deptName
+        select e.id,
+               e.username,
+               e.name,
+               e.gender,
+               e.phone,
+               e.job,
+               e.salary,
+               e.image,
+               e.entry_date,
+               e.dept_id,
+               e.create_time,
+               e.update_time,
+               d.name as dept_name
         from emp e
         left join dept d on e.dept_id = d.id
         <where>
@@ -23,4 +35,22 @@
         </where>
         order by e.update_time desc
     </select>
+
+    <update id="update">
+        update emp
+        set username = #{username},
+            name = #{name},
+            gender = #{gender},
+            phone = #{phone},
+            job = #{job},
+            salary = #{salary},
+            image = #{image},
+            entry_date = #{entryDate},
+            dept_id = #{deptId},
+            update_time = #{updateTime}
+            <if test="password != null and password != ''">
+                , password = #{password}
+            </if>
+        where id = #{id}
+    </update>
 </mapper>

@@ -3,69 +3,65 @@ package com.hhh.controller;
 import com.hhh.pojo.Dept;
 import com.hhh.pojo.Result;
 import com.hhh.service.DeptService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
+@RequestMapping("/depts")
+@RequiredArgsConstructor
 public class DeptController {
-    // 日志对象
-    private static final Logger log = LoggerFactory.getLogger(DeptController.class);
+    private final DeptService deptService;
 
-    // 注入DeptService
-    @Autowired
-    private DeptService deptService;
-
-    @GetMapping("/depts")
-    public Result<List<Dept>> list(){
-        log.info("查询所有部门");
-        // 调用service查询所有部门,并返回结果
+    @GetMapping
+    public Result<List<Dept>> list() {
+        log.info("Query department list");
         return Result.success(deptService.list());
     }
-//查询回显部门详情
-    @GetMapping("/depts/{id}")
+
+    @GetMapping("/{id}")
     public Result<Dept> getById(@PathVariable Integer id) {
-        log.info("根据id查询部门: {}", id);
+        log.info("Query department by id: {}", id);
         return Result.success(deptService.getById(id));
     }
-//    @DeleteMapping("/depts")
-//    public Result delete(HttpServletRequest request) {
-//        String id = request.getParameter("id");
-//        deptService.delete(Integer.valueOf(id)); // 将包装数据类型转换为基本数据类型
-//        return Result.success();
-//    }
 
-    @DeleteMapping("/depts")
-    public Result deleteByParam(@RequestParam Integer id){
-        log.info("根据 id 删除部门 (参数): {}", id);
-        deptService.delete(id);
+    @DeleteMapping({"", "/{id}"})
+    public Result<Void> delete(
+            @PathVariable(required = false) Integer id,
+            @RequestParam(name = "id", required = false) Integer requestId
+    ) {
+        Integer deptId = id != null ? id : requestId;
+        if (deptId == null) {
+            throw new IllegalArgumentException("部门ID不能为空");
+        }
+        log.info("Delete department: {}", deptId);
+        deptService.delete(deptId);
         return Result.success();
     }
 
-    @PostMapping("/depts")
-    public Result add(@RequestBody Dept dept) {
-        log.info("新增部门: {}", dept);
+    @PostMapping
+    public Result<Void> add(@RequestBody Dept dept) {
+        log.info("Add department: {}", dept);
         deptService.add(dept);
         return Result.success();
     }
 
-    @PutMapping("/depts")
-    public Result update(@RequestBody Dept dept) {
-        log.info("更新部门: {}", dept);
+    @PutMapping({"", "/{id}"})
+    public Result<Void> update(
+            @PathVariable(required = false) Integer id,
+            @RequestBody Dept dept
+    ) {
+        if (id != null) {
+            dept.setId(id);
+        }
+        if (dept.getId() == null) {
+            throw new IllegalArgumentException("部门ID不能为空");
+        }
+        log.info("Update department: {}", dept);
         deptService.update(dept);
         return Result.success();
     }
-
-
-//    @PutMapping("/depts/{id}")
-//    public Result updateByPath(@PathVariable Integer id, @RequestBody Dept dept) {
-//        dept.setId(id);
-//        log.info("更新部门(路径): {}", dept);
-//        deptService.update(dept);
-//        return Result.success();
-//    }
-
 }

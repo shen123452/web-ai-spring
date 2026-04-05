@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhh.mapper.ClazzMapper">
+    <select id="list" resultType="com.hhh.pojo.Clazz">
+        select c.id,
+               c.name,
+               c.room,
+               c.begin_date,
+               c.end_date,
+               c.master_id,
+               c.subject,
+               c.create_time,
+               c.update_time,
+               e.name as master_name,
+               case
+                   when curdate() &lt; c.begin_date then '未开班'
+                   when curdate() &gt; c.end_date then '已结课'
+                   else '进行中'
+               end as status
+        from clazz c
+        left join emp e on c.master_id = e.id
+        <where>
+            <if test="name != null and name != ''">
+                and c.name like concat('%', #{name}, '%')
+            </if>
+            <if test="begin != null">
+                and c.begin_date &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                and c.end_date &lt;= #{end}
+            </if>
+        </where>
+        order by c.update_time desc
+    </select>
+</mapper>

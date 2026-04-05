@@ -20,6 +20,17 @@ mybatis:
 logging:
   level:
     org.springframework.jdbc.support.JdbcTransactionManager: debug
+    #阿里云 oss
+aliyun:
+  oss:
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    bucket-name: 2005java
+    region: cn-beijing
+
+jwt:
+  secret-key: tlias-web-demo-secret-key-please-change-this
+  ttl: 604800000
+  header-name: Authorization
 
 
 
